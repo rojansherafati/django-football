@@ -27,7 +27,7 @@ def clubs_search(request):
     players=request.POST.getlist("players[]")
     pls=[]
     for player in players:
-        pls.append(models.Player.objects.get(id=player))
+#        pls.append(models.Player.objects.get(id=player))
     clubs = models.Club.objects.filter(players__in = pls)
     cls=[]
     for club in clubs:
