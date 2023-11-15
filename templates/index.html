@@ -1,0 +1,63 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <table id="tbl1" border="1">
+
+    </table>
+    <div class="players">
+    </div>
+    <script src="{% static 'js/jquery-3.7.1.js' %}"></script>
+    <script>
+        function getplayers(){
+            $.ajax({
+                url:"/app/players/get/all/",
+                metjod:"post",
+                dataType:"json",
+                success:function(result){
+                    for( let player of result.players){
+                        $(".players").append(`<input type="checkbox" name="players" value="${player.id}">${player.name} ${player.family}<br>`)
+                    }
+                }
+            })
+        }
+        getplayers()
+        $(".players").on("change","input[name=players]",function(){
+            let ms=[]
+            for (let obj of $('input[name=players]')){
+                if($(obj).prop("checked") == true) {
+                    ms.push($(obj).val())
+                }
+            }
+            $.ajax({
+                url:'/app/clubs/search/',
+                method:"post",
+                dataType:"json",
+                data:{"players": ms},
+                success:function(result){
+                    $("#tbl1").empty()
+                    let clubs = result.clubs
+                    $("#tbl1").append(`<tr>
+                <th>id</th>
+                <th>name</th>
+                <th>year</th>
+                <th>players</th>
+                </tr>`)
+                    for (let club of clubs)
+                    $("#tbl1").append(`<tr>
+                <td>${club.id}</td>
+                <td>${club.name}</td>
+                <td>${club.year}</td>
+                <td>${club.players}</td>
+                </tr>`)
+            }
+        })
+    })
+    </script>
+</body>
+</html>
